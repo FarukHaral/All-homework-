@@ -1,0 +1,111 @@
+# app.py
+# froshims1 — Server-Side Sport Validation
+# Author: Faruk Haral
+
+from flask import Flask, render_template, request
+
+app = Flask(__name__)
+
+SPORTS = [
+    "Basketball",
+    "Soccer",
+    "Ultimate Frisbee",
+    "Volleyball",
+    "Tennis"
+]
+
+
+@app.route("/")
+def index():
+    return render_template("index.html", sports=SPORTS)
+
+
+@app.route("/register", methods=["POST"])
+def register():
+    name = request.form.get("name")
+    sport = request.form.get("sport")
+
+    if not name:
+        return render_template("failure.html")
+
+    if sport not in SPORTS:
+        return render_template("failure.html")
+
+    return render_template("success.html", name=name, sport=sport)
+# requirements.txt
+Flask
+<!-- templates/layout.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Froshims Registration</title>
+</head>
+<body>
+    <header>
+        <h1>Froshims Sports Registration</h1>
+    </header>
+
+    <main>
+        {% block body %}{% endblock %}
+    </main>
+
+    <footer>
+        <p>&copy; 2026 Faruk Haral</p>
+    </footer>
+</body>
+</html>
+<!-- templates/index.html -->
+{% extends "layout.html" %}
+
+{% block body %}
+    <h2>Register for a Sport</h2>
+
+    <form action="/register" method="post">
+        <label for="name">Student Name</label>
+        <input type="text" id="name" name="name" placeholder="Enter your name">
+
+        <br><br>
+
+        <label for="sport">Sport</label>
+        <select id="sport" name="sport">
+            <option value="">Sport</option>
+
+            {% for sport in sports %}
+                <option value="{{ sport }}">{{ sport }}</option>
+            {% endfor %}
+        </select>
+
+        <br><br>
+
+        <button type="submit">Register</button>
+    </form>
+{% endblock %}
+<!-- templates/success.html -->
+{% extends "layout.html" %}
+
+{% block body %}
+    <h2>You are registered!</h2>
+
+    <p>
+        Thank you, {{ name }}. You have successfully registered for {{ sport }}.
+    </p>
+
+    <a href="/">Register another student</a>
+{% endblock %}
+<!-- templates/failure.html -->
+{% extends "layout.html" %}
+
+{% block body %}
+    <h2>You are not registered!</h2>
+
+    <p>
+        Please enter your name and choose a valid sport.
+    </p>
+
+    <a href="/">Go back to registration form</a>
+{% endblock %}
+cd froshims1
+pip install -r requirements.txt
+flask run
