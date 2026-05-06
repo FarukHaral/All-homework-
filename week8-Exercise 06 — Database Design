@@ -1,0 +1,307 @@
+-- Exercise 06 — Database Design
+-- Author: Faruk Haral
+
+PRAGMA foreign_keys = ON;
+
+-- =========================================================
+-- 6.1 — Design a Social Media Schema
+-- =========================================================
+
+DROP TABLE IF EXISTS comments;
+DROP TABLE IF EXISTS likes;
+DROP TABLE IF EXISTS follows;
+DROP TABLE IF EXISTS posts;
+DROP TABLE IF EXISTS users;
+
+CREATE TABLE users (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    username TEXT NOT NULL UNIQUE,
+    email TEXT NOT NULL UNIQUE,
+    bio TEXT,
+    join_date TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE posts (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER NOT NULL,
+    content TEXT NOT NULL,
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
+CREATE TABLE follows (
+    follower_id INTEGER NOT NULL,
+    following_id INTEGER NOT NULL,
+    followed_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (follower_id, following_id),
+    FOREIGN KEY (follower_id) REFERENCES users(id),
+    FOREIGN KEY (following_id) REFERENCES users(id),
+    CHECK (follower_id != following_id)
+);
+
+CREATE TABLE likes (
+    user_id INTEGER NOT NULL,
+    post_id INTEGER NOT NULL,
+    liked_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (user_id, post_id),
+    FOREIGN KEY (user_id) REFERENCES users(id),
+    FOREIGN KEY (post_id) REFERENCES posts(id)
+);
+
+CREATE TABLE comments (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER NOT NULL,
+    post_id INTEGER NOT NULL,
+    content TEXT NOT NULL,
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id),
+    FOREIGN KEY (post_id) REFERENCES posts(id)
+);
+
+
+-- =========================================================
+-- 6.2 — Design a Movie Rental Schema
+-- =========================================================
+
+DROP TABLE IF EXISTS movie_reviews;
+DROP TABLE IF EXISTS rentals;
+DROP TABLE IF EXISTS movie_copies;
+DROP TABLE IF EXISTS customers;
+DROP TABLE IF EXISTS movies;
+DROP TABLE IF EXISTS genres;
+
+CREATE TABLE genres (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL UNIQUE
+);
+
+CREATE TABLE movies (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    title TEXT NOT NULL,
+    release_year INTEGER NOT NULL,
+    rating TEXT NOT NULL CHECK (rating IN ('G', 'PG', 'PG-13', 'R')),
+    genre_id INTEGER NOT NULL,
+    FOREIGN KEY (genre_id) REFERENCES genres(id)
+);
+
+CREATE TABLE movie_copies (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    movie_id INTEGER NOT NULL,
+    condition TEXT NOT NULL CHECK (condition IN ('good', 'fair', 'damaged')),
+    is_available INTEGER NOT NULL DEFAULT 1 CHECK (is_available IN (0, 1)),
+    FOREIGN KEY (movie_id) REFERENCES movies(id)
+);
+
+CREATE TABLE customers (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    email TEXT NOT NULL UNIQUE,
+    phone TEXT
+);
+
+CREATE TABLE rentals (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    customer_id INTEGER NOT NULL,
+    copy_id INTEGER NOT NULL,
+    rental_date TEXT NOT NULL,
+    due_date TEXT NOT NULL,
+    return_date TEXT,
+    FOREIGN KEY (customer_id) REFERENCES customers(id),
+    FOREIGN KEY (copy_id) REFERENCES movie_copies(id)
+);
+
+CREATE TABLE movie_reviews (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    customer_id INTEGER NOT NULL,
+    movie_id INTEGER NOT NULL,
+    stars INTEGER NOT NULL CHECK (stars BETWEEN 1 AND 5),
+    review_text TEXT,
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (customer_id) REFERENCES customers(id),
+    FOREIGN KEY (movie_id) REFERENCES movies(id),
+    UNIQUE (customer_id, movie_id)
+);
+
+
+-- =========================================================
+-- 6.3 — Design an E-Commerce Schema
+-- =========================================================
+
+DROP TABLE IF EXISTS order_items;
+DROP TABLE IF EXISTS orders;
+DROP TABLE IF EXISTS products;
+DROP TABLE IF EXISTS store_customers;
+DROP TABLE IF EXISTS categories;
+
+CREATE TABLE categories (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL UNIQUE,
+    parent_category_id INTEGER,
+    FOREIGN KEY (parent_category_id) REFERENCES categories(id)
+);
+
+CREATE TABLE products (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    category_id INTEGER NOT NULL,
+    name TEXT NOT NULL,
+    description TEXT,
+    price REAL NOT NULL CHECK (price >= 0),
+    stock_count INTEGER NOT NULL DEFAULT 0 CHECK (stock_count >= 0),
+    FOREIGN KEY (category_id) REFERENCES categories(id)
+);
+
+CREATE TABLE store_customers (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    email TEXT NOT NULL UNIQUE,
+    phone TEXT
+);
+
+CREATE TABLE orders (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    customer_id INTEGER NOT NULL,
+    order_date TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    status TEXT NOT NULL DEFAULT 'pending'
+        CHECK (status IN ('pending', 'shipped', 'delivered', 'cancelled')),
+    FOREIGN KEY (customer_id) REFERENCES store_customers(id)
+);
+
+CREATE TABLE order_items (
+    order_id INTEGER NOT NULL,
+    product_id INTEGER NOT NULL,
+    quantity INTEGER NOT NULL CHECK (quantity > 0),
+    price_at_purchase REAL NOT NULL CHECK (price_at_purchase >= 0),
+    PRIMARY KEY (order_id, product_id),
+    FOREIGN KEY (order_id) REFERENCES orders(id),
+    FOREIGN KEY (product_id) REFERENCES products(id)
+);
+
+-- Categories and sub-categories are handled using parent_category_id.
+-- price_at_purchase is stored because product prices can change later,
+-- but old orders must keep the original purchase price.
+
+
+-- =========================================================
+-- 6.4 — Fix the Bad Schema
+-- =========================================================
+
+-- Problems in the broken schema:
+-- 1. info TEXT stores mixed data instead of separate columns.
+-- 2. name_and_email TEXT stores two values in one column.
+-- 3. courses TEXT stores a comma-separated list, which breaks 1NF.
+-- 4. gpa TEXT uses the wrong data type.
+-- 5. teacher_name TEXT duplicates teacher data.
+-- 6. teacher_salary TEXT uses the wrong data type and repeats salary data.
+-- 7. There is no primary key.
+-- 8. There are no foreign keys.
+-- 9. Student, course, teacher, and enrollment data are all mixed in one table.
+
+DROP TABLE IF EXISTS fixed_enrollments;
+DROP TABLE IF EXISTS fixed_courses;
+DROP TABLE IF EXISTS fixed_teachers;
+DROP TABLE IF EXISTS fixed_students;
+
+CREATE TABLE fixed_students (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    first_name TEXT NOT NULL,
+    last_name TEXT NOT NULL,
+    email TEXT NOT NULL UNIQUE,
+    gpa REAL CHECK (gpa BETWEEN 0.0 AND 4.0)
+);
+
+CREATE TABLE fixed_teachers (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    first_name TEXT NOT NULL,
+    last_name TEXT NOT NULL,
+    salary REAL NOT NULL CHECK (salary >= 0)
+);
+
+CREATE TABLE fixed_courses (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    title TEXT NOT NULL,
+    teacher_id INTEGER NOT NULL,
+    FOREIGN KEY (teacher_id) REFERENCES fixed_teachers(id)
+);
+
+CREATE TABLE fixed_enrollments (
+    student_id INTEGER NOT NULL,
+    course_id INTEGER NOT NULL,
+    PRIMARY KEY (student_id, course_id),
+    FOREIGN KEY (student_id) REFERENCES fixed_students(id),
+    FOREIGN KEY (course_id) REFERENCES fixed_courses(id)
+);
+
+
+-- =========================================================
+-- 6.5 — Seed Your Social Media Schema
+-- =========================================================
+
+INSERT INTO users (username, email, bio, join_date) VALUES
+('faruk', 'faruk@example.com', 'Civil engineering student', '2025-01-01'),
+('alice', 'alice@example.com', 'Loves programming', '2025-01-02'),
+('bob', 'bob@example.com', 'Database learner', '2025-01-03'),
+('carol', 'carol@example.com', 'Enjoys Python', '2025-01-04'),
+('david', 'david@example.com', 'SQL beginner', '2025-01-05');
+
+INSERT INTO posts (user_id, content, created_at) VALUES
+(1, 'Learning SQL today!', '2025-02-01 10:00:00'),
+(1, 'Database design is useful.', '2025-02-01 11:00:00'),
+(2, 'I like Python projects.', '2025-02-02 10:00:00'),
+(2, 'Joins are powerful.', '2025-02-02 11:00:00'),
+(3, 'SQLite is simple to use.', '2025-02-03 10:00:00'),
+(3, 'Subqueries are interesting.', '2025-02-03 11:00:00'),
+(4, 'I created my first table.', '2025-02-04 10:00:00'),
+(4, 'Foreign keys connect tables.', '2025-02-04 11:00:00'),
+(5, 'Normalization avoids duplicate data.', '2025-02-05 10:00:00'),
+(5, 'SQL practice helps a lot.', '2025-02-05 11:00:00');
+
+INSERT INTO follows (follower_id, following_id) VALUES
+(1, 2),
+(1, 3),
+(2, 1),
+(3, 4),
+(4, 5);
+
+INSERT INTO likes (user_id, post_id) VALUES
+(1, 3),
+(1, 5),
+(2, 1),
+(2, 5),
+(3, 1),
+(3, 2),
+(4, 1),
+(4, 6),
+(5, 1),
+(5, 9);
+
+INSERT INTO comments (user_id, post_id, content, created_at) VALUES
+(2, 1, 'Great job!', '2025-02-06 10:00:00'),
+(3, 1, 'Nice post.', '2025-02-06 10:10:00'),
+(4, 2, 'Very useful.', '2025-02-06 10:20:00'),
+(5, 3, 'I agree.', '2025-02-06 10:30:00'),
+(1, 5, 'Good explanation.', '2025-02-06 10:40:00');
+
+
+-- =========================================================
+-- Verification Queries
+-- =========================================================
+
+-- Who does user 1 follow?
+SELECT u.username AS user_1_follows
+FROM follows f
+JOIN users u ON f.following_id = u.id
+WHERE f.follower_id = 1;
+
+-- What are the most liked posts?
+SELECT p.id, p.content, COUNT(l.user_id) AS like_count
+FROM posts p
+LEFT JOIN likes l ON p.id = l.post_id
+GROUP BY p.id, p.content
+ORDER BY like_count DESC;
+
+-- Which user has posted the most?
+SELECT u.username, COUNT(p.id) AS post_count
+FROM users u
+LEFT JOIN posts p ON u.id = p.user_id
+GROUP BY u.id, u.username
+ORDER BY post_count DESC;
