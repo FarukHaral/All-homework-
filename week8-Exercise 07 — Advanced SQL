@@ -1,0 +1,171 @@
+-- Exercise 07 — Advanced SQL
+-- Author: Faruk Haral
+
+-- =========================================================
+-- 7.1 — Create an Index (school.db)
+-- =========================================================
+
+CREATE INDEX IF NOT EXISTS idx_students_gpa
+ON students(gpa);
+
+EXPLAIN QUERY PLAN
+SELECT *
+FROM students
+WHERE gpa > 3.5;
+
+
+-- =========================================================
+-- 7.2 — Create a View: Active Enrollments (school.db)
+-- =========================================================
+
+DROP VIEW IF EXISTS enrollment_details;
+
+CREATE VIEW enrollment_details AS
+SELECT
+    s.first_name || ' ' || s.last_name AS student_name,
+    c.code AS course_code,
+    c.title AS course_title,
+    g.letter_grade
+FROM enrollments e
+JOIN students s ON e.student_id = s.id
+JOIN courses c ON e.course_id = c.id
+LEFT JOIN grades g ON e.id = g.enrollment_id;
+
+SELECT *
+FROM enrollment_details
+WHERE letter_grade = 'A';
+
+
+-- =========================================================
+-- 7.3 — Create a View: Course Stats (school.db)
+-- =========================================================
+
+DROP VIEW IF EXISTS course_statistics;
+
+CREATE VIEW course_statistics AS
+SELECT
+    c.code AS course_code,
+    c.title AS course_title,
+    COUNT(e.id) AS enrolled_students,
+    ROUND(AVG(g.final_exam), 1) AS average_final_exam
+FROM courses c
+LEFT JOIN enrollments e ON c.id = e.course_id
+LEFT JOIN grades g ON e.id = g.enrollment_id
+GROUP BY c.id, c.code, c.title;
+
+SELECT *
+FROM course_statistics;
+
+
+-- =========================================================
+-- 7.4 — Insert New Data (school.db)
+-- =========================================================
+
+INSERT INTO students (first_name, last_name, email, enrolled_year, gpa)
+VALUES ('Faruk', 'Haral', 'newstudent@school.edu', 2024, NULL);
+
+SELECT *
+FROM students
+WHERE email = 'newstudent@school.edu';
+
+
+-- =========================================================
+-- 7.5 — Update Data (school.db)
+-- =========================================================
+
+UPDATE students
+SET gpa = 3.22
+WHERE id = 17;
+
+SELECT *
+FROM students
+WHERE id = 17;
+
+
+-- =========================================================
+-- 7.6 — Safe Delete (school.db)
+-- =========================================================
+
+-- Preview grades that will be deleted
+SELECT *
+FROM grades
+WHERE letter_grade = 'F';
+
+-- Delete F grades
+DELETE FROM grades
+WHERE letter_grade = 'F';
+
+
+-- =========================================================
+-- 7.7 — Transaction: Enroll a Student (school.db)
+-- =========================================================
+
+BEGIN TRANSACTION;
+
+INSERT INTO enrollments (student_id, course_id)
+VALUES (1, 13);
+
+INSERT INTO grades (enrollment_id, midterm, final_exam, letter_grade)
+VALUES (last_insert_rowid(), NULL, NULL, NULL);
+
+COMMIT;
+
+
+-- =========================================================
+-- 7.8 — Transaction: Library Loan (library.db)
+-- =========================================================
+
+BEGIN TRANSACTION;
+
+UPDATE books
+SET available_copies = available_copies - 1
+WHERE id = 3
+  AND available_copies > 0;
+
+INSERT INTO loans (member_id, book_id, loan_date, due_date, return_date)
+SELECT 3, 3, '2025-04-01', '2025-04-15', NULL
+WHERE (
+    SELECT available_copies
+    FROM books
+    WHERE id = 3
+) >= 0;
+
+COMMIT;
+
+
+-- =========================================================
+-- 7.9 — EXPLAIN Query Plan (school.db)
+-- =========================================================
+
+CREATE INDEX IF NOT EXISTS idx_students_email
+ON students(email);
+
+EXPLAIN QUERY PLAN
+SELECT *
+FROM students
+WHERE LOWER(email) = 'alice@school.edu';
+
+EXPLAIN QUERY PLAN
+SELECT *
+FROM students
+WHERE email = 'alice@school.edu';
+
+-- Explanation:
+-- Version A is slower because LOWER(email) applies a function to every email value.
+-- This prevents SQLite from using the normal email index efficiently.
+-- Version B is faster because it compares the email column directly,
+-- so SQLite can use the index on students(email).
+
+
+-- =========================================================
+-- 7.10 — Challenge: Compound Index (school.db)
+-- =========================================================
+
+CREATE INDEX IF NOT EXISTS idx_enrollments_student_course
+ON enrollments(student_id, course_id);
+
+EXPLAIN QUERY PLAN
+SELECT *
+FROM enrollments
+WHERE student_id = 5
+  AND course_id = 1;
