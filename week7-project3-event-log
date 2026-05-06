@@ -1,0 +1,100 @@
+# Project 3 — Event Log Reporter
+# Author: Faruk Haral
+
+import csv
+
+room_counts = {}
+event_type_counts = {}
+day_attendees = {}
+large_events = []
+
+filename = "bookings.csv"
+
+with open(filename, "r", newline="", encoding="utf-8") as file:
+    reader = csv.DictReader(file)
+
+    for row in reader:
+        date = row["date"]
+        room = row["room"]
+        event_type = row["event_type"]
+        attendees = int(row["attendees"])
+
+        if room in room_counts:
+            room_counts[room] += 1
+        else:
+            room_counts[room] = 1
+
+        if event_type in event_type_counts:
+            event_type_counts[event_type] += 1
+        else:
+            event_type_counts[event_type] = 1
+
+        if date in day_attendees:
+            day_attendees[date] += attendees
+        else:
+            day_attendees[date] = attendees
+
+        if attendees > 50:
+            large_events.append({
+                "date": date,
+                "room": room,
+                "event_type": event_type,
+                "attendees": attendees
+            })
+
+busiest_day = max(day_attendees, key=day_attendees.get)
+busiest_attendees = day_attendees[busiest_day]
+
+large_events = sorted(
+    large_events,
+    key=lambda event: event["attendees"],
+    reverse=True
+)
+
+print("=== Community Centre Booking Report ===")
+print()
+
+print("Bookings by Room:")
+for room in sorted(room_counts):
+    print(f"  {room:<6} : {room_counts[room]} events")
+
+print()
+
+print("Bookings by Event Type:")
+for event_type in sorted(event_type_counts):
+    print(f"  {event_type:<8} : {event_type_counts[event_type]} events")
+
+print()
+
+print(f"Busiest Day: {busiest_day}  ({busiest_attendees} total attendees)")
+
+print()
+
+print("Large Events (> 50 attendees):")
+for event in large_events:
+    print(
+        f"  {event['date']} | "
+        f"{event['room']:<7} | "
+        f"{event['event_type']:<8} | "
+        f"{event['attendees']:>3} attendees"
+    )
+
+PR Teach-Back:
+
+This program reads bookings.csv using csv.DictReader.
+
+It builds four data structures in one loop:
+- room_counts counts how many bookings each room has
+- event_type_counts counts how many bookings each event type has
+- day_attendees stores total attendees for each date
+- large_events stores events with more than 50 attendees
+
+The busiest day is found using max(day_attendees, key=day_attendees.get).
+
+Large events are sorted from highest attendees to lowest using sorted() with a lambda function.
+
+The report is printed in four sections:
+1. Bookings by room
+2. Bookings by event type
+3. Busiest day
+4. Large events
