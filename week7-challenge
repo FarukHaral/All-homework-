@@ -1,0 +1,259 @@
+# Challenge 1 — Frequency Filter
+# Author: Faruk Haral
+
+import csv
+
+"""
+Pseudocode:
+1. Read the favorites.csv file from ../week1/favorites.csv.
+2. Count how many votes each programming language received.
+3. Ask the user for the minimum votes to display.
+4. Print only the languages with votes greater than or equal to the minimum.
+5. Sort the output from highest count to lowest count.
+"""
+
+filename = "../week1/favorites.csv"
+
+language_counts = {}
+
+with open(filename, "r", newline="", encoding="utf-8") as file:
+    reader = csv.DictReader(file)
+
+    for row in reader:
+        language = row["language"]
+
+        if language in language_counts:
+            language_counts[language] += 1
+        else:
+            language_counts[language] = 1
+
+minimum_votes = int(input("Minimum votes to display: "))
+
+sorted_languages = sorted(
+    language_counts.items(),
+    key=lambda item: item[1],
+    reverse=True
+)
+
+# Challenge 2 — Two-Column Report
+# Author: Faruk Haral
+
+import csv
+
+"""
+Pseudocode:
+1. Read the favorites.csv file from ../week1/favorites.csv.
+2. Create a nested dictionary to count problems for each language.
+3. For each row, get the language and favourite problem.
+4. Count how many times each problem appears for each language.
+5. Find the most common problem for every language.
+6. Print a two-column table.
+"""
+
+filename = "../week1/favorites.csv"
+
+language_problem_counts = {}
+
+with open(filename, "r", newline="", encoding="utf-8") as file:
+    reader = csv.DictReader(file)
+
+    for row in reader:
+        language = row["language"]
+        problem = row["problem"]
+
+        if language not in language_problem_counts:
+            language_problem_counts[language] = {}
+
+        if problem in language_problem_counts[language]:
+            language_problem_counts[language][problem] += 1
+        else:
+            language_problem_counts[language][problem] = 1
+
+print("Language   | Most Common Problem")
+print("-----------+--------------------")
+
+for language in sorted(language_problem_counts):
+    problem_counts = language_problem_counts[language]
+
+    most_common_problem = max(
+        problem_counts,
+        key=problem_counts.get
+    )
+
+    print(f"{language:<10} | {most_common_problem}")
+
+# Challenge 3 — CSV Writer
+# Author: Faruk Haral
+
+import csv
+
+"""
+Pseudocode:
+1. Read the favorites.csv file from ../week1/favorites.csv.
+2. Count votes for each programming language.
+3. Count the total number of votes.
+4. Calculate the percentage for each language.
+5. Write the results to language_summary.csv.
+6. Print a success message.
+"""
+
+input_filename = "../week1/favorites.csv"
+output_filename = "language_summary.csv"
+
+language_counts = {}
+total_votes = 0
+
+with open(input_filename, "r", newline="", encoding="utf-8") as file:
+    reader = csv.DictReader(file)
+
+    for row in reader:
+        language = row["language"]
+
+        if language in language_counts:
+            language_counts[language] += 1
+        else:
+            language_counts[language] = 1
+
+        total_votes += 1
+
+sorted_languages = sorted(
+    language_counts.items(),
+    key=lambda item: item[1],
+    reverse=True
+)
+
+with open(output_filename, "w", newline="", encoding="utf-8") as file:
+    writer = csv.writer(file)
+
+    writer.writerow(["language", "votes", "percentage"])
+
+    for language, votes in sorted_languages:
+        percentage = votes / total_votes * 100
+        writer.writerow([language, votes, f"{percentage:.2f}"])
+
+print("Saved to language_summary.csv")
+
+# Challenge 4 — SQL Explorer
+# Author: Faruk Haral
+
+import sqlite3
+
+"""
+Pseudocode:
+1. Connect to favorites.db.
+2. Show a menu to the user.
+3. Let the user choose one SQL query.
+4. Option 1 counts by language.
+5. Option 2 counts by problem.
+6. Option 3 searches by problem name using a parameterized query.
+7. Option 4 shows the top 5 problems overall.
+8. Option 5 quits the program.
+"""
+
+database = "favorites.db"
+
+connection = sqlite3.connect(database)
+cursor = connection.cursor()
+
+while True:
+    print("\n=== SQL Explorer ===")
+    print("1. Count by language")
+    print("2. Count by problem")
+    print("3. Search by problem name")
+    print("4. Top 5 problems overall")
+    print("5. Quit")
+
+    choice = input("Choice: ")
+
+    if choice == "1":
+        cursor.execute("""
+            SELECT language, COUNT(*) AS votes
+            FROM favorites
+            GROUP BY language
+            ORDER BY votes DESC
+        """)
+
+        results = cursor.fetchall()
+
+        print("\nCount by language:")
+        for language, votes in results:
+            print(f"{language}: {votes}")
+
+    elif choice == "2":
+        cursor.execute("""
+            SELECT problem, COUNT(*) AS votes
+            FROM favorites
+            GROUP BY problem
+            ORDER BY votes DESC
+        """)
+
+        results = cursor.fetchall()
+
+        print("\nCount by problem:")
+        for problem, votes in results:
+            print(f"{problem}: {votes}")
+
+    elif choice == "3":
+        search_term = input("Enter problem name to search: ")
+
+        cursor.execute("""
+            SELECT problem, language, COUNT(*) AS votes
+            FROM favorites
+            WHERE problem LIKE ?
+            GROUP BY problem, language
+            ORDER BY votes DESC
+        """, (f"%{search_term}%",))
+
+        results = cursor.fetchall()
+
+        print("\nSearch results:")
+        if len(results) == 0:
+            print("No results found.")
+        else:
+            for problem, language, votes in results:
+                print(f"{problem} - {language}: {votes}")
+
+    elif choice == "4":
+        cursor.execute("""
+            SELECT problem, COUNT(*) AS votes
+            FROM favorites
+            GROUP BY problem
+            ORDER BY votes DESC
+            LIMIT 5
+        """)
+
+        results = cursor.fetchall()
+
+        print("\nTop 5 problems overall:")
+        for problem, votes in results:
+            print(f"{problem}: {votes}")
+
+    elif choice == "5":
+        print("Goodbye!")
+        break
+
+    else:
+        print("Invalid choice. Please choose 1, 2, 3, 4, or 5.")
+
+connection.close()
+
+student_id,name,language,score
+1,Ali,Python,5
+2,Ayse,C,4
+3,Mehmet,Scratch,3
+4,Elif,Python,6
+5,Can,JavaScript,2
+2,Ayse,C,4
+6,Zeynep,,3
+7,Burak,Python,0
+8,Deniz,Scratch,5
+,,,
+9,Ece,C,2
+10,Mert,Python,1
+11,Selin,Java,4
+12,Kaan,Scratch,5
+13,Nil,Python,3
+
+for language, count in sorted_languages:
+    if count >= minimum_votes:
+        print(f"{language}: {count}")
