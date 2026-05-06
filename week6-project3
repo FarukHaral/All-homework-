@@ -1,0 +1,43 @@
+# Project 3 — Grade Calculator
+# Author: Faruk Haral
+
+"""
+Pseudocode:
+1. Ask the user how many subject scores they want to enter.
+2. Create an empty list called scores.
+3. Use a for loop to collect all scores.
+4. Add each score to the scores list using append().
+5. Calculate the average using sum(scores) / len(scores).
+6. Use if / elif / else to decide the letter grade.
+7. Print the average and grade.
+8. Print the highest and lowest score.
+"""
+
+scores = []
+
+subject_count = int(input("How many subjects do you want to enter? "))
+
+for i in range(subject_count):
+    score = float(input(f"Enter score {i + 1}: "))
+    scores.append(score)
+
+average = sum(scores) / len(scores)
+
+if average >= 90:
+    grade = "A"
+elif average >= 80:
+    grade = "B"
+elif average >= 70:
+    grade = "C"
+elif average >= 60:
+    grade = "D"
+else:
+    grade = "F"
+
+highest_score = max(scores)
+lowest_score = min(scores)
+
+print(f"Average: {average}")
+print(f"Grade: {grade}")
+print(f"Highest score: {highest_score}")
+print(f"Lowest score: {lowest_score}")
