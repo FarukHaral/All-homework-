@@ -1,0 +1,64 @@
+-- Exercise 02 — Querying Data
+-- Author: Faruk Haral
+
+-- 2.1 — Search by Name (school.db)
+SELECT first_name, last_name
+FROM students
+WHERE last_name LIKE '%s%';
+
+-- 2.2 — Email Domain Search (school.db)
+SELECT first_name, last_name, email
+FROM teachers
+WHERE email LIKE '%@cs50.harvard.edu';
+
+-- 2.3 — Top 5 GPAs (school.db)
+SELECT first_name, last_name, gpa
+FROM students
+ORDER BY gpa DESC
+LIMIT 5;
+
+-- 2.4 — Distinct Enrollment Years (school.db)
+SELECT DISTINCT enrolled_year
+FROM students
+ORDER BY enrolled_year;
+
+-- 2.5 — Multiple Departments (school.db)
+SELECT *
+FROM courses
+WHERE department_id IN (1, 2);
+
+-- 2.6 — Students NOT from 2018 (school.db)
+SELECT first_name, last_name, enrolled_year
+FROM students
+WHERE enrolled_year NOT IN (2018);
+
+-- 2.7 — Sort Courses by Credits then Title (school.db)
+SELECT code, title, credits
+FROM courses
+ORDER BY credits DESC, title ASC;
+
+-- 2.8 — Find Books by Title Pattern (library.db)
+SELECT *
+FROM books
+WHERE title LIKE 'The%';
+
+-- 2.9 — Non-Returned Loans (library.db)
+SELECT id, member_id, due_date
+FROM loans
+WHERE return_date IS NULL;
+
+-- 2.10 — British Authors (library.db)
+SELECT *
+FROM authors
+WHERE nationality = 'British'
+ORDER BY last_name;
+
+-- 2.11 — Premium and Student Members (library.db)
+SELECT *
+FROM members
+WHERE membership_type IN ('premium', 'student');
+
+-- 2.12 — Challenge: 4-Letter First Names (school.db)
+SELECT first_name, last_name
+FROM students
+WHERE first_name LIKE '____';
