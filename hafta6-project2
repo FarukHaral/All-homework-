@@ -1,0 +1,98 @@
+# Project 2 — Number Guessing Game
+# Author: Faruk Haral
+
+import random
+
+"""
+Pseudocode:
+1. Import the random module.
+2. Pick a random secret number between 1 and 10.
+3. Set the guess counter to 0.
+4. Ask the user to guess a number.
+5. While the guess is not equal to the secret number:
+   - Increase the guess counter.
+   - If the guess is too low, tell the user.
+   - If the guess is too high, tell the user.
+   - Ask the user to guess again.
+6. When the user guesses correctly:
+   - Increase the guess counter one last time.
+   - Print how many guesses it took.
+"""
+
+# Step 1 — Pick a random number between 1 and 10
+secret = random.randint(1, 10)
+
+# Step 2 — Set up a counter
+guesses = 0
+
+# Step 3 — Ask the user for their first guess
+guess = int(input("Guess a number between 1 and 10: "))
+
+# Step 4 — Loop until the guess is correct
+while guess != secret:
+    guesses += 1
+
+    if guess < secret:
+        guess = int(input("Too low! Try again: "))
+    else:
+        guess = int(input("Too high! Try again: "))
+
+# Count the correct guess
+guesses += 1
+
+print(f"Correct! You got it in {guesses} guesses.")
+
+
+# Project 2 — Number Guessing Game
+# Author: Faruk Haral
+
+import random
+
+"""
+Pseudocode:
+1. Show difficulty menu to the user.
+2. Easy means numbers from 1 to 10.
+3. Medium means numbers from 1 to 50.
+4. Hard means numbers from 1 to 100.
+5. Pick a random number based on the difficulty.
+6. Ask the user to guess until the guess is correct.
+7. Count each valid guess.
+8. Tell the user if the guess is too low or too high.
+9. Print the total number of guesses when the user wins.
+"""
+
+print("Choose difficulty:")
+print("(1) Easy 1-10")
+print("(2) Medium 1-50")
+print("(3) Hard 1-100")
+
+choice = input("Choice: ")
+
+if choice == "1":
+    max_number = 10
+elif choice == "2":
+    max_number = 50
+elif choice == "3":
+    max_number = 100
+else:
+    print("Invalid choice. Easy mode selected.")
+    max_number = 10
+
+secret = random.randint(1, max_number)
+guesses = 0
+
+while True:
+    try:
+        guess = int(input(f"Guess a number between 1 and {max_number}: "))
+        guesses += 1
+
+        if guess < secret:
+            print("Too low!")
+        elif guess > secret:
+            print("Too high!")
+        else:
+            print(f"Correct! You got it in {guesses} guesses.")
+            break
+
+    except ValueError:
+        print("Error: Please enter a valid number.")
