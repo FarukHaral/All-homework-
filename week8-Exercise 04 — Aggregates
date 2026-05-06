@@ -1,0 +1,80 @@
+-- Exercise 04 — Aggregates
+-- Author: Faruk Haral
+
+-- 4.1 — Total Students (school.db)
+SELECT COUNT(*) AS total_students
+FROM students;
+
+-- 4.2 — Students per Enrollment Year (school.db)
+SELECT enrolled_year, COUNT(*) AS student_count
+FROM students
+GROUP BY enrolled_year
+ORDER BY enrolled_year;
+
+-- 4.3 — Average GPA (school.db)
+SELECT ROUND(AVG(gpa), 2) AS average_gpa
+FROM students;
+
+-- 4.4 — Highest and Lowest GPA (school.db)
+SELECT 
+    MAX(gpa) AS highest_gpa,
+    MIN(gpa) AS lowest_gpa,
+    ROUND(AVG(gpa), 2) AS average_gpa
+FROM students;
+
+-- 4.5 — Courses per Department (school.db)
+SELECT d.id AS department_id, COUNT(c.id) AS course_count
+FROM departments d
+LEFT JOIN courses c ON d.id = c.department_id
+GROUP BY d.id
+ORDER BY d.id;
+
+-- 4.6 — Students per Course (school.db)
+SELECT course_id, COUNT(*) AS enrollment_count
+FROM enrollments
+GROUP BY course_id
+ORDER BY enrollment_count DESC;
+
+-- 4.7 — Popular Courses Only (school.db)
+SELECT course_id, COUNT(*) AS enrollment_count
+FROM enrollments
+GROUP BY course_id
+HAVING COUNT(*) > 3
+ORDER BY enrollment_count DESC;
+
+-- 4.8 — Average Grade per Course (school.db)
+SELECT e.course_id, ROUND(AVG(g.final_exam), 1) AS average_final_exam
+FROM grades g
+INNER JOIN enrollments e ON g.enrollment_id = e.id
+GROUP BY e.course_id
+ORDER BY e.course_id;
+
+-- 4.9 — Department Salary Stats (school.db)
+SELECT 
+    department_id,
+    COUNT(*) AS teacher_count,
+    ROUND(AVG(salary), 0) AS average_salary,
+    MAX(salary) AS highest_salary
+FROM teachers
+GROUP BY department_id
+ORDER BY department_id;
+
+-- 4.10 — Overdue Fines (library.db)
+SELECT 
+    SUM(fine_amount) AS total_fines,
+    AVG(fine_amount) AS average_fine
+FROM loans
+WHERE fine_amount > 0;
+
+-- 4.11 — Books per Genre (library.db)
+SELECT genre_id, COUNT(*) AS book_count
+FROM books
+GROUP BY genre_id
+ORDER BY book_count DESC;
+
+-- 4.12 — Challenge: Departments with High Avg Salary (school.db)
+SELECT department_id, ROUND(AVG(salary), 0) AS average_salary
+FROM teachers
+GROUP BY department_id
+HAVING AVG(salary) > 75000
+ORDER BY average_salary DESC;
