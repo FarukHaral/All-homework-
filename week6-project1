@@ -1,0 +1,55 @@
+# Project 1 — Temperature Converter
+# Author: Faruk Haral
+# Branch: Faruk-project1
+
+Pseudocode:
+1. Ask the user to enter a temperature in Celsius.
+2. Convert the input from string to float.
+3. Use the formula: Fahrenheit = (Celsius * 9 / 5) + 32
+4. Print the result using an f-string.
+"""
+
+# Step 1 — Get input from the user and convert to float
+celsius = float(input("Enter temperature in Celsius: "))
+
+# Step 2 — Apply the formula
+fahrenheit = (celsius * 9 / 5) + 32
+
+# Step 3 — Print the result using an f-string
+print(f"{celsius}°C = {fahrenheit}°F")
+
+# Project 1 — Temperature Converter
+# Author: Faruk Haral
+# Branch: Faruk-project1
+
+"""
+Pseudocode:
+1. Show a menu to the user.
+2. Ask the user to choose conversion direction.
+3. If choice is 1, convert Celsius to Fahrenheit.
+4. If choice is 2, convert Fahrenheit to Celsius.
+5. If the input is not valid, show an error message.
+"""
+
+print("Convert:")
+print("(1) Celsius → Fahrenheit")
+print("(2) Fahrenheit → Celsius")
+
+choice = input("Choice: ")
+
+try:
+    if choice == "1":
+        celsius = float(input("Enter temperature in Celsius: "))
+        fahrenheit = (celsius * 9 / 5) + 32
+        print(f"{celsius}°C = {fahrenheit}°F")
+
+    elif choice == "2":
+        fahrenheit = float(input("Enter temperature in Fahrenheit: "))
+        celsius = (fahrenheit - 32) * 5 / 9
+        print(f"{fahrenheit}°F = {celsius}°C")
+
+    else:
+        print("Error: Please choose 1 or 2.")
+
+except ValueError:
+    print("Error: Please enter a valid number.")
