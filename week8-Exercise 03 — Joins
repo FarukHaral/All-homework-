@@ -1,0 +1,75 @@
+-- Exercise 03 — Joins
+-- Author: Faruk Haral
+
+-- 3.1 — Student + Course Names (school.db)
+SELECT s.first_name, s.last_name, c.title
+FROM enrollments e
+INNER JOIN students s ON e.student_id = s.id
+INNER JOIN courses c ON e.course_id = c.id;
+
+-- 3.2 — Who Teaches What? (school.db)
+SELECT c.title, t.first_name, t.last_name
+FROM courses c
+INNER JOIN teachers t ON c.teacher_id = t.id;
+
+-- 3.3 — Department + Teacher (school.db)
+SELECT t.first_name, t.last_name, d.name AS department
+FROM teachers t
+INNER JOIN departments d ON t.department_id = d.id;
+
+-- 3.4 — Full Enrollment Details (school.db)
+SELECT 
+    s.first_name AS student_first_name,
+    s.last_name AS student_last_name,
+    c.title AS course_title,
+    t.first_name AS teacher_first_name,
+    t.last_name AS teacher_last_name,
+    g.letter_grade
+FROM enrollments e
+INNER JOIN students s ON e.student_id = s.id
+INNER JOIN courses c ON e.course_id = c.id
+INNER JOIN teachers t ON c.teacher_id = t.id
+INNER JOIN grades g ON e.id = g.enrollment_id;
+
+-- 3.5 — Students Who Haven't Enrolled (school.db)
+SELECT s.first_name, s.last_name
+FROM students s
+LEFT JOIN enrollments e ON s.id = e.student_id
+WHERE e.student_id IS NULL;
+
+-- 3.6 — Courses with No Students (school.db)
+SELECT c.title
+FROM courses c
+LEFT JOIN enrollments e ON c.id = e.course_id
+WHERE e.course_id IS NULL;
+
+-- 3.7 — Book + Author Names (library.db)
+SELECT b.title, a.first_name, a.last_name
+FROM books b
+INNER JOIN book_authors ba ON b.id = ba.book_id
+INNER JOIN authors a ON ba.author_id = a.id;
+
+-- 3.8 — Genre + Book Count (library.db)
+SELECT g.name AS genre, b.title
+FROM genres g
+LEFT JOIN books b ON g.id = b.genre_id
+ORDER BY g.name, b.title;
+
+-- 3.9 — Member Loan History (library.db)
+SELECT m.first_name, m.last_name, b.title
+FROM members m
+LEFT JOIN loans l ON m.id = l.member_id
+LEFT JOIN books b ON l.book_id = b.id
+ORDER BY m.last_name, m.first_name;
+
+-- 3.10 — Challenge: Multi-Join (library.db)
+SELECT 
+    m.first_name,
+    m.last_name,
+    b.title,
+    l.loan_date,
+    COALESCE(l.return_date, 'Not returned') AS return_date
+FROM loans l
+INNER JOIN members m ON l.member_id = m.id
+INNER JOIN books b ON l.book_id = b.id
+ORDER BY l.loan_date;
