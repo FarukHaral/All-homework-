@@ -1,0 +1,86 @@
+# Project 2 — Grade Tracker
+# Author: Faruk Haral
+
+import csv
+
+"""
+Pseudocode:
+1. Open the grades.csv file.
+2. Read the file using csv.DictReader.
+3. Create a list to store all scores.
+4. Track the highest score and the student name.
+5. Track the lowest score and the student name.
+6. Count how many students are in each grade band.
+7. Calculate the average score.
+8. Print a clean grade summary report.
+"""
+
+filename = "grades.csv"
+
+scores = []
+
+highest_score = -1
+highest_student = ""
+
+lowest_score = 101
+lowest_student = ""
+
+grade_counts = {
+    "A": 0,
+    "B": 0,
+    "C": 0,
+    "D": 0,
+    "F": 0
+}
+
+try:
+    with open(filename, "r", newline="", encoding="utf-8") as file:
+        reader = csv.DictReader(file)
+
+        for row in reader:
+            name = row["name"]
+            score = int(row["score"])
+
+            scores.append(score)
+
+            if score > highest_score:
+                highest_score = score
+                highest_student = name
+
+            if score < lowest_score:
+                lowest_score = score
+                lowest_student = name
+
+            if score >= 90:
+                grade_counts["A"] += 1
+            elif score >= 80:
+                grade_counts["B"] += 1
+            elif score >= 70:
+                grade_counts["C"] += 1
+            elif score >= 60:
+                grade_counts["D"] += 1
+            else:
+                grade_counts["F"] += 1
+
+    if len(scores) == 0:
+        print("No student data found.")
+    else:
+        total_students = len(scores)
+        average_score = sum(scores) / total_students
+
+        print("=== Quiz Grade Summary ===")
+        print(f"Students assessed : {total_students}")
+        print(f"Average score     : {average_score:.1f}")
+        print(f"Highest score     : {highest_score}  ({highest_student})")
+        print(f"Lowest score      : {lowest_score}  ({lowest_student})")
+
+        print()
+        print("Grade Distribution:")
+        print(f"  A (90-100) : {grade_counts['A']} students")
+        print(f"  B (80-89)  : {grade_counts['B']} students")
+        print(f"  C (70-79)  : {grade_counts['C']} students")
+        print(f"  D (60-69)  : {grade_counts['D']} students")
+        print(f"  F ( 0-59)  : {grade_counts['F']} students")
+
+except FileNotFoundError:
+    print(f"Error: The file '{filename}' was not found.")
