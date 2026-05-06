@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Faruk Haral - Personal Profile</title>
+</head>
+<body>
+
+    <header>
+        <img src="https://placehold.co/150x150" alt="Profile placeholder image of Faruk Haral">
+
+        <h1>Faruk Haral</h1>
+        <p>English Civil Engineering student at Balkan University in Skopje.</p>
+
+        <nav>
+            <a href="#about">About</a> |
+            <a href="#skills">Skills</a> |
+            <a href="#contact">Contact</a>
+        </nav>
+    </header>
+
+    <hr>
+
+    <main>
+        <section id="about">
+            <h2>About</h2>
+
+            <p>
+                My name is Faruk Haral. I am studying Civil Engineering in English at Balkan University
+                in Skopje, North Macedonia. I am interested in learning programming because it can help me
+                solve engineering problems and improve my technical skills.
+            </p>
+
+            <p>
+                I enjoy learning step by step and practicing with real examples. My goal is to become better
+                at using technology, coding, and engineering tools so I can use them in my future career.
+            </p>
+
+            <figure>
+                <img src="https://placehold.co/300x200" alt="Placeholder image representing studying and technology">
+                <figcaption>A simple image representing learning, studying, and technology.</figcaption>
+            </figure>
+        </section>
+
+        <section id="skills">
+            <h2>Skills</h2>
+
+            <ul>
+                <li>HTML basics</li>
+                <li>Python programming</li>
+                <li>Problem solving</li>
+                <li>Teamwork</li>
+                <li>Civil engineering knowledge</li>
+            </ul>
+
+            <h3>Top 3 Skills</h3>
+
+            <ol>
+                <li>Problem solving</li>
+                <li>Teamwork</li>
+                <li>Python programming</li>
+            </ol>
+        </section>
+
+        <section id="contact">
+            <h2>Contact</h2>
+
+            <table border="1">
+                <thead>
+                    <tr>
+                        <th>Method</th>
+                        <th>Address</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <tr>
+                        <td>Email</td>
+                        <td><a href="mailto:faruk.haral@example.com">faruk.haral@example.com</a></td>
+                    </tr>
+
+                    <tr>
+                        <td>GitHub</td>
+                        <td><a href="https://github.com/" target="_blank">Faruk Haral GitHub Profile</a></td>
+                    </tr>
+
+                    <tr>
+                        <td>LinkedIn</td>
+                        <td><a href="https://www.linkedin.com/" target="_blank">Faruk Haral LinkedIn Profile</a></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Video</h3>
+
+            <iframe 
+                width="560" 
+                height="315" 
+                src="https://www.youtube.com/embed/dQw4w9WgXcQ" 
+                title="YouTube video player" 
+                allowfullscreen>
+            </iframe>
+        </section>
+    </main>
+
+    <hr>
+
+    <footer>
+        <p>&copy; 2026 Faruk Haral. All rights reserved.</p>
+    </footer>
+
+</body>
+</html>
