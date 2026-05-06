@@ -1,0 +1,55 @@
+# Project 1 — Language Poll Analyser
+# Author: Faruk Haral
+
+import csv
+
+"""
+Pseudocode:
+1. Open the favorites.csv file.
+2. Read the file using csv.DictReader.
+3. Create an empty dictionary to count each language.
+4. Loop through each row in the CSV file.
+5. Get the language from each row.
+6. Make the language case-insensitive, so "python" and "Python" are counted together.
+7. Add the language to the dictionary or increase its count.
+8. Count the total number of responses.
+9. Sort the languages from most popular to least popular.
+10. Print the report.
+"""
+
+filename = "favorites.csv"
+
+counts = {}
+total_responses = 0
+
+try:
+    with open(filename, "r", newline="", encoding="utf-8") as file:
+        reader = csv.DictReader(file)
+
+        for row in reader:
+            language = row["language"].strip().title()
+
+            if language in counts:
+                counts[language] += 1
+            else:
+                counts[language] = 1
+
+            total_responses += 1
+
+    sorted_languages = sorted(
+        counts,
+        key=counts.get,
+        reverse=True
+    )
+
+    print("=== Language Popularity Report ===")
+
+    for rank, language in enumerate(sorted_languages, start=1):
+        count = counts[language]
+        print(f"{rank}. {language:<8}: {count:>3} students")
+
+    print()
+    print(f"Total responses: {total_responses}")
+
+except FileNotFoundError:
+    print(f"Error: The file '{filename}' was not found.")
