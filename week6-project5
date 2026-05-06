@@ -1,0 +1,93 @@
+# Project 5 — Mini Shopping Cart
+# Author: Faruk Haral
+
+"""
+Pseudocode:
+1. Create a menu dictionary with item numbers, item names, and prices.
+2. Create an empty cart dictionary to store item quantities.
+3. Set total to 0.0.
+4. Show the shop menu.
+5. Keep asking the user to choose an item until they choose Done.
+6. If the user chooses a valid item, ask how many they want.
+7. Add the item quantity to the cart.
+8. Update the running total.
+9. If the user enters an invalid choice or quantity, show an error message.
+10. When the user is done, apply a 10% discount if total is over $5.00.
+11. Print a receipt with items, quantities, prices, discount, and final total.
+"""
+
+menu = {
+    1: ("Apple", 0.50),
+    2: ("Banana", 0.30),
+    3: ("Milk", 1.20),
+    4: ("Bread", 2.00),
+}
+
+cart = {}   # { item_name: quantity }
+total = 0.0
+
+while True:
+    print("\n--- Shop Menu ---")
+    print("1. Apple    $0.50")
+    print("2. Banana   $0.30")
+    print("3. Milk     $1.20")
+    print("4. Bread    $2.00")
+    print("5. Done")
+
+    try:
+        choice = int(input("\nChoose an item (1-5): "))
+
+        if choice == 5:
+            break
+
+        elif choice in menu:
+            item_name, price = menu[choice]
+
+            quantity = int(input("How many? "))
+
+            if quantity <= 0:
+                print("Invalid quantity. Please enter a number greater than 0.")
+                continue
+
+            if item_name in cart:
+                cart[item_name] += quantity
+            else:
+                cart[item_name] = quantity
+
+            total += price * quantity
+
+            print(f"Added {quantity} {item_name}(s). Total: ${total:.2f}")
+
+        else:
+            print("Invalid choice. Please choose a number between 1 and 5.")
+
+    except ValueError:
+        print("Invalid input. Please enter a number.")
+
+discount = 0.0
+
+if total > 5.00:
+    discount = total * 0.10
+
+final_total = total - discount
+
+print("\n--- Receipt ---")
+
+for item_name, quantity in cart.items():
+    price = 0.0
+
+    for item in menu.values():
+        if item[0] == item_name:
+            price = item[1]
+
+    item_total = price * quantity
+    print(f"{item_name:<8} x{quantity:<3} ${item_total:.2f}")
+
+print("---------------------")
+
+if discount > 0:
+    print(f"Subtotal: ${total:.2f}")
+    print(f"Discount: -${discount:.2f}")
+
+print(f"Total: ${final_total:.2f}")
+print("Thank you!")
