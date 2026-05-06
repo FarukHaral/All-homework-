@@ -1,0 +1,299 @@
+// Exercise 6 — Fetch & APIs
+// Author: Faruk Haral
+
+let postStart = 0;
+const postLimit = 10;
+
+const quoteDisplay = document.querySelector("#quote-display");
+const quoteButton = document.querySelector("#quote-button");
+
+const githubInput = document.querySelector("#github-input");
+const githubSearchButton = document.querySelector("#github-search");
+const githubResult = document.querySelector("#github-result");
+
+const postsContainer = document.querySelector("#posts-container");
+const loadMoreButton = document.querySelector("#load-more");
+
+const multiFetchButton = document.querySelector("#multi-fetch-button");
+const multiFetchResult = document.querySelector("#multi-fetch-result");
+
+function getErrorMessage(status) {
+    if (status === 404) {
+        return "That resource doesn't exist.";
+    }
+
+    if (status >= 500) {
+        return "Something went wrong, please try again.";
+    }
+
+    return "Request failed. Please try again.";
+}
+
+// ===============================
+// Task 1 — Random Quote
+// ===============================
+
+async function fetchQuote() {
+    quoteDisplay.innerHTML = "<p>Loading quote...</p>";
+
+    try {
+        const response = await fetch("https://api.quotable.io/random");
+
+        if (!response.ok) {
+            throw new Error(getErrorMessage(response.status));
+        }
+
+        const data = await response.json();
+
+        if (!data || !data.content) {
+            quoteDisplay.innerHTML = "<p>No quote found.</p>";
+            return;
+        }
+
+        quoteDisplay.innerHTML = `
+            <blockquote>
+                <p>"${data.content}"</p>
+                <footer>— ${data.author}</footer>
+            </blockquote>
+        `;
+    } catch (error) {
+        quoteDisplay.innerHTML = `<p class="error">Could not load quote. ${error.message}</p>`;
+    }
+}
+
+if (quoteButton) {
+    quoteButton.addEventListener("click", fetchQuote);
+}
+
+fetchQuote();
+
+
+// ===============================
+// Task 2 — GitHub User Search
+// ===============================
+
+async function searchUser() {
+    const username = githubInput.value.trim();
+
+    if (username === "") {
+        githubResult.innerHTML = `<p class="error">Please enter a GitHub username.</p>`;
+        return;
+    }
+
+    githubResult.innerHTML = "<p>Loading GitHub user...</p>";
+
+    try {
+        const response = await fetch(`https://api.github.com/users/${username}`);
+
+        if (response.status === 404) {
+            githubResult.innerHTML = `<p class="error">User not found.</p>`;
+            return;
+        }
+
+        if (!response.ok) {
+            throw new Error(getErrorMessage(response.status));
+        }
+
+        const user = await response.json();
+
+        githubResult.innerHTML = `
+            <div class="github-card">
+                <img src="${user.avatar_url}" alt="${user.login}'s GitHub avatar" width="120">
+                <h3>${user.name || user.login}</h3>
+                <p>${user.bio || "No bio available."}</p>
+                <p><strong>Followers:</strong> ${user.followers}</p>
+                <p><strong>Public Repos:</strong> ${user.public_repos}</p>
+                <a href="${user.html_url}" target="_blank">View GitHub Profile</a>
+            </div>
+        `;
+    } catch (error) {
+        githubResult.innerHTML = `<p class="error">Could not load GitHub user. ${error.message}</p>`;
+    }
+}
+
+if (githubSearchButton) {
+    githubSearchButton.addEventListener("click", searchUser);
+}
+
+if (githubInput) {
+    githubInput.addEventListener("keydown", function (event) {
+        if (event.key === "Enter") {
+            searchUser();
+        }
+    });
+}
+
+
+// ===============================
+// Task 3 — Browse Posts
+// ===============================
+
+async function loadPosts() {
+    postsContainer.insertAdjacentHTML("beforeend", "<p id='posts-loading'>Loading posts...</p>");
+
+    try {
+        const response = await fetch(
+            `https://jsonplaceholder.typicode.com/posts?_start=${postStart}&_limit=${postLimit}`
+        );
+
+        if (!response.ok) {
+            throw new Error(getErrorMessage(response.status));
+        }
+
+        const posts = await response.json();
+
+        const loadingMessage = document.querySelector("#posts-loading");
+        if (loadingMessage) {
+            loadingMessage.remove();
+        }
+
+        if (posts.length === 0) {
+            postsContainer.insertAdjacentHTML("beforeend", "<p>No more posts found.</p>");
+            return;
+        }
+
+        posts.forEach(function (post) {
+            const article = document.createElement("article");
+            article.classList.add("post-card");
+            article.dataset.postId = post.id;
+
+            article.innerHTML = `
+                <h3>${post.title}</h3>
+                <p>${post.body}</p>
+                <div class="comments"></div>
+            `;
+
+            article.addEventListener("click", function () {
+                loadComments(post.id, article);
+            });
+
+            postsContainer.appendChild(article);
+        });
+
+        postStart += postLimit;
+    } catch (error) {
+        const loadingMessage = document.querySelector("#posts-loading");
+        if (loadingMessage) {
+            loadingMessage.remove();
+        }
+
+        postsContainer.insertAdjacentHTML(
+            "beforeend",
+            `<p class="error">Could not load posts. ${error.message}</p>`
+        );
+    }
+}
+
+async function loadComments(postId, postCard) {
+    const commentsBox = postCard.querySelector(".comments");
+
+    if (commentsBox.dataset.loaded === "true") {
+        commentsBox.classList.toggle("hidden");
+        return;
+    }
+
+    commentsBox.innerHTML = "<p>Loading comments...</p>";
+
+    try {
+        const response = await fetch(
+            `https://jsonplaceholder.typicode.com/posts/${postId}/comments`
+        );
+
+        if (!response.ok) {
+            throw new Error(getErrorMessage(response.status));
+        }
+
+        const comments = await response.json();
+
+        if (comments.length === 0) {
+            commentsBox.innerHTML = "<p>No comments found.</p>";
+            return;
+        }
+
+        commentsBox.innerHTML = "<h4>Comments</h4>";
+
+        comments.forEach(function (comment) {
+            const commentDiv = document.createElement("div");
+            commentDiv.classList.add("comment");
+
+            commentDiv.innerHTML = `
+                <p><strong>${comment.name}</strong></p>
+                <p>${comment.body}</p>
+            `;
+
+            commentsBox.appendChild(commentDiv);
+        });
+
+        commentsBox.dataset.loaded = "true";
+    } catch (error) {
+        commentsBox.innerHTML = `<p class="error">Could not load comments. ${error.message}</p>`;
+    }
+}
+
+if (loadMoreButton) {
+    loadMoreButton.addEventListener("click", loadPosts);
+}
+
+loadPosts();
+
+
+// ===============================
+// Task 5 — Promise.all Bonus
+// ===============================
+
+async function loadMultipleData() {
+    multiFetchResult.innerHTML = "<p>Loading all data...</p>";
+
+    try {
+        const [quoteResponse, userResponse, todoResponse] = await Promise.all([
+            fetch("https://api.quotable.io/random"),
+            fetch("https://jsonplaceholder.typicode.com/users/1"),
+            fetch("https://jsonplaceholder.typicode.com/todos/1")
+        ]);
+
+        if (!quoteResponse.ok) {
+            throw new Error(getErrorMessage(quoteResponse.status));
+        }
+
+        if (!userResponse.ok) {
+            throw new Error(getErrorMessage(userResponse.status));
+        }
+
+        if (!todoResponse.ok) {
+            throw new Error(getErrorMessage(todoResponse.status));
+        }
+
+        const [quote, user, todo] = await Promise.all([
+            quoteResponse.json(),
+            userResponse.json(),
+            todoResponse.json()
+        ]);
+
+        multiFetchResult.innerHTML = `
+            <div class="multi-card">
+                <h3>Random Quote</h3>
+                <p>"${quote.content}"</p>
+                <p>— ${quote.author}</p>
+            </div>
+
+            <div class="multi-card">
+                <h3>User</h3>
+                <p><strong>Name:</strong> ${user.name}</p>
+                <p><strong>Email:</strong> ${user.email}</p>
+                <p><strong>City:</strong> ${user.address.city}</p>
+            </div>
+
+            <div class="multi-card">
+                <h3>Todo</h3>
+                <p><strong>Title:</strong> ${todo.title}</p>
+                <p><strong>Completed:</strong> ${todo.completed ? "Yes" : "No"}</p>
+            </div>
+        `;
+    } catch (error) {
+        multiFetchResult.innerHTML = `<p class="error">Could not load all data. ${error.message}</p>`;
+    }
+}
+
+if (multiFetchButton) {
+    multiFetchButton.addEventListener("click", loadMultipleData);
+}
