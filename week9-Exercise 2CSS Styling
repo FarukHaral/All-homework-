@@ -1,0 +1,179 @@
+
+/* Exercise 2 — CSS Styling */
+/* Author: Faruk Haral */
+
+:root {
+    --color-primary: #1e3a8a;
+    --color-secondary: #60a5fa;
+    --color-text: #1f2937;
+    --color-background: #f3f4f6;
+    --color-card: #ffffff;
+    --font-heading: "Poppins", sans-serif;
+    --font-body: "Poppins", sans-serif;
+    --spacing-unit: 1rem;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: var(--font-body);
+    background-color: var(--color-background);
+    color: var(--color-text);
+    line-height: 1.7;
+}
+
+header {
+    background-color: var(--color-primary);
+    color: white;
+    padding: calc(var(--spacing-unit) * 2);
+    text-align: center;
+}
+
+#hero {
+    padding: calc(var(--spacing-unit) * 2);
+    background-color: var(--color-secondary);
+    color: white;
+    text-align: center;
+}
+
+h1,
+h2,
+h3 {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    margin-bottom: var(--spacing-unit);
+}
+
+h1 {
+    font-size: 2.5rem;
+}
+
+h2 {
+    font-size: 1.75rem;
+}
+
+h3 {
+    font-size: 1.25rem;
+}
+
+p {
+    font-size: 1rem;
+    color: var(--color-text);
+}
+
+p::first-letter {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: var(--color-primary);
+}
+
+nav {
+    margin-top: var(--spacing-unit);
+}
+
+nav a {
+    color: white;
+    text-decoration: none;
+    margin: 0 var(--spacing-unit);
+    font-weight: 600;
+}
+
+nav a:hover {
+    text-decoration: underline;
+    color: var(--color-secondary);
+}
+
+a:focus {
+    outline: 3px solid var(--color-secondary);
+    outline-offset: 4px;
+}
+
+main {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: calc(var(--spacing-unit) * 2);
+}
+
+.card {
+    background-color: var(--color-card);
+    padding: var(--spacing-unit);
+    border: 2px solid var(--color-secondary);
+    margin: var(--spacing-unit) 0;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.card:hover {
+    transform: translateY(-3px);
+}
+
+ul,
+ol {
+    padding-left: calc(var(--spacing-unit) * 2);
+}
+
+li {
+    padding: 0.5rem;
+    margin-bottom: 0.25rem;
+}
+
+li:nth-child(odd) {
+    background-color: #dbeafe;
+}
+
+li:nth-child(even) {
+    background-color: #eff6ff;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: var(--spacing-unit);
+    background-color: white;
+}
+
+th,
+td {
+    border: 1px solid var(--color-secondary);
+    padding: 0.75rem;
+    text-align: left;
+}
+
+th {
+    background-color: var(--color-primary);
+    color: white;
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+}
+
+figure {
+    margin: var(--spacing-unit) 0;
+    padding: var(--spacing-unit);
+    background-color: white;
+    border-left: 5px solid var(--color-primary);
+}
+
+figcaption {
+    font-size: 0.9rem;
+    color: #4b5563;
+    margin-top: 0.5rem;
+}
+
+footer {
+    background-color: var(--color-primary);
+    color: white;
+    text-align: center;
+    padding: var(--spacing-unit);
+    margin-top: calc(var(--spacing-unit) * 2);
+}
+
+footer p {
+    color: white;
+}
