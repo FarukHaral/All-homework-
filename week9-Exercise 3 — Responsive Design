@@ -1,0 +1,235 @@
+/* Exercise 3 — Responsive Design */
+/* Author: Faruk Haral */
+
+/* =========================
+   Task 1 — Mobile-First Reset
+   ========================= */
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    font-size: 16px;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    line-height: 1.6;
+    background-color: #f4f6f8;
+    color: #222;
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
+
+main {
+    width: min(100% - 2rem, 1200px);
+    margin: 0 auto;
+}
+
+section {
+    margin: 2rem 0;
+    padding: 1rem;
+    background-color: white;
+    border-radius: 12px;
+}
+
+p {
+    max-width: 70ch;
+}
+
+/* =========================
+   Task 5 — Responsive Typography
+   ========================= */
+
+h1 {
+    font-size: clamp(1.5rem, 5vw, 3rem);
+    margin: 0;
+}
+
+h2 {
+    font-size: clamp(1.3rem, 3vw, 2rem);
+}
+
+h3 {
+    font-size: clamp(1.1rem, 2vw, 1.5rem);
+}
+
+/* =========================
+   Header
+   ========================= */
+
+header {
+    min-height: 40vh;
+    padding: 2rem 1rem;
+    background-color: #1e3a8a;
+    color: white;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 1rem;
+}
+
+/* =========================
+   Task 2 — Responsive Navigation
+   Mobile: stacked column
+   ========================= */
+
+nav {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    align-items: stretch;
+}
+
+nav a {
+    min-height: 44px;
+    padding: 0.75rem 1rem;
+    color: white;
+    background-color: #2563eb;
+    text-decoration: none;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+nav a:hover {
+    background-color: #60a5fa;
+    text-decoration: underline;
+}
+
+nav a:focus {
+    outline: 3px solid #facc15;
+    outline-offset: 3px;
+}
+
+/* =========================
+   Task 3 — Flexbox Layout
+   ========================= */
+
+#flexbox-demo {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.flex-card {
+    flex: 1 1 250px;
+    min-width: 250px;
+    padding: 1.5rem;
+    background-color: #dbeafe;
+    border: 2px solid #60a5fa;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+/* =========================
+   Task 4 — CSS Grid Layout
+   Mobile: 1 column
+   ========================= */
+
+#grid-demo {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+}
+
+.grid-item {
+    min-height: 180px;
+    padding: 1rem;
+    background-color: #e0f2fe;
+    border: 2px solid #0284c7;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.grid-item.featured {
+    grid-column: span 1;
+}
+
+/* =========================
+   Tablet: 600px+
+   ========================= */
+
+@media (min-width: 600px) {
+    nav {
+        flex-direction: row;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    nav a {
+        min-width: 120px;
+    }
+
+    #grid-demo {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .grid-item.featured {
+        grid-column: span 2;
+    }
+}
+
+/* =========================
+   Desktop: 900px+
+   ========================= */
+
+@media (min-width: 900px) {
+    header {
+        min-height: 50vh;
+    }
+
+    #flexbox-demo {
+        flex-direction: row;
+        flex-wrap: wrap;
+        align-items: center;
+    }
+
+    .flex-card {
+        flex: 1 1 250px;
+    }
+
+    #grid-demo {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .grid-item.featured {
+        grid-column: span 2;
+    }
+}
+
+/* =========================
+   Wide Screens: 1200px+
+   ========================= */
+
+@media (min-width: 1200px) {
+    body {
+        font-size: 1.1rem;
+    }
+
+    section {
+        padding: 2rem;
+    }
+
+    #grid-demo {
+        gap: 1.5rem;
+    }
+
+    #flexbox-demo {
+        gap: 1.5rem;
+    }
+}
