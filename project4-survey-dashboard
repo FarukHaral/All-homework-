@@ -1,0 +1,185 @@
+# Project 4 — Survey Dashboard
+# Author: Faruk Haral
+
+import csv
+import sqlite3
+
+csv_files = [
+    "faculty_science.csv",
+    "faculty_arts.csv",
+    "faculty_business.csv"
+]
+
+database_name = "survey.db"
+
+db = sqlite3.connect(database_name)
+cursor = db.cursor()
+
+cursor.execute("DROP TABLE IF EXISTS responses")
+
+cursor.execute("""
+    CREATE TABLE responses (
+        student_id TEXT,
+        faculty TEXT,
+        year INTEGER,
+        satisfaction INTEGER,
+        favourite_tool TEXT,
+        comments TEXT
+    )
+""")
+
+for filename in csv_files:
+    with open(filename, "r", newline="", encoding="utf-8") as file:
+        reader = csv.DictReader(file)
+
+        for row in reader:
+            cursor.execute("""
+                INSERT INTO responses (
+                    student_id,
+                    faculty,
+                    year,
+                    satisfaction,
+                    favourite_tool,
+                    comments
+                )
+                VALUES (?, ?, ?, ?, ?, ?)
+            """, (
+                row["student_id"],
+                row["faculty"],
+                int(row["year"]),
+                int(row["satisfaction"]),
+                row["favourite_tool"],
+                row["comments"]
+            ))
+
+db.commit()
+
+print("==============================")
+print("  UNIVERSITY SURVEY DASHBOARD")
+print("==============================")
+print()
+
+print("1. Total Responses by Faculty")
+
+cursor.execute("""
+    SELECT faculty, COUNT(*) AS total
+    FROM responses
+    GROUP BY faculty
+    ORDER BY faculty
+""")
+
+faculty_totals = cursor.fetchall()
+
+total_responses = 0
+
+for faculty, total in faculty_totals:
+    print(f"   {faculty:<8} : {total}")
+    total_responses += total
+
+print(f"   TOTAL    : {total_responses}")
+print()
+
+print("2. Average Satisfaction by Year of Study")
+
+cursor.execute("""
+    SELECT year, AVG(satisfaction) AS average_satisfaction
+    FROM responses
+    GROUP BY year
+    ORDER BY year
+""")
+
+year_averages = cursor.fetchall()
+
+for year, average_satisfaction in year_averages:
+    print(f"   Year {year} : {average_satisfaction:.1f} / 5")
+
+print()
+
+print("3. Favourite Tool Popularity")
+
+cursor.execute("""
+    SELECT favourite_tool, COUNT(*) AS total
+    FROM responses
+    GROUP BY favourite_tool
+    ORDER BY total DESC
+""")
+
+tool_counts = cursor.fetchall()
+
+for tool, total in tool_counts:
+    print(f"   {tool:<6} : {total:>2} students")
+
+print()
+
+print("4. Faculty Comparison")
+print("   Faculty   | Avg Satisfaction | Most Popular Tool")
+print("   -----------------------------------------------")
+
+cursor.execute("""
+    SELECT faculty, AVG(satisfaction) AS average_satisfaction
+    FROM responses
+    GROUP BY faculty
+    ORDER BY faculty
+""")
+
+faculty_averages = cursor.fetchall()
+
+for faculty, average_satisfaction in faculty_averages:
+    cursor.execute("""
+        SELECT favourite_tool, COUNT(*) AS total
+        FROM responses
+        WHERE faculty = ?
+        GROUP BY favourite_tool
+        ORDER BY total DESC
+        LIMIT 1
+    """, (faculty,))
+
+    most_popular_tool = cursor.fetchone()[0]
+
+    print(f"   {faculty:<8} | {average_satisfaction:<16.1f} | {most_popular_tool}")
+
+print()
+
+minimum_score = int(input("Enter minimum satisfaction score (1-5): "))
+
+cursor.execute("""
+    SELECT student_id, faculty, year, favourite_tool
+    FROM responses
+    WHERE satisfaction >= ?
+    ORDER BY satisfaction DESC, faculty, student_id
+""", (minimum_score,))
+
+filtered_students = cursor.fetchall()
+
+print(f"Students with satisfaction >= {minimum_score}:")
+
+for student_id, faculty, year, favourite_tool in filtered_students:
+    print(f"  {student_id} | {faculty:<8} | Year {year} | {favourite_tool}")
+
+db.close()
+
+This program completes Project 4: Survey Dashboard.
+
+The program reads three CSV files:
+- faculty_science.csv
+- faculty_arts.csv
+- faculty_business.csv
+
+It creates a SQLite database called survey.db and stores all survey responses in one table called responses.
+
+The dashboard has five parts:
+1. Total responses by faculty
+2. Average satisfaction by year of study
+3. Favourite tool popularity
+4. Faculty comparison with average satisfaction and most popular tool
+5. Interactive filter by minimum satisfaction score
+
+The program uses csv.DictReader to read the CSV files.
+It uses sqlite3 to create the database, insert rows, and run SQL queries.
+
+All SQL queries that use user input use ? placeholders.
+For example, the minimum satisfaction score is used safely like this:
+
+WHERE satisfaction >= ?
+
+This avoids unsafe SQL string formatting.
