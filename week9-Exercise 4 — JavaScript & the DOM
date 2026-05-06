@@ -1,0 +1,152 @@
+// Exercise 4 — JavaScript DOM
+// Author: Faruk Haral
+
+// ===============================
+// Task 1 — Console Warmup
+// ===============================
+
+// Select the h1 and change its text
+const mainHeading = document.querySelector("h1");
+mainHeading.textContent = "JavaScript DOM Practice";
+
+// Select all .card elements and log how many there are
+const cards = document.querySelectorAll(".card");
+console.log("Number of cards:", cards.length);
+
+// Change the background color of #target-box using JS
+const targetBox = document.querySelector("#target-box");
+targetBox.style.backgroundColor = "lightblue";
+
+
+// ===============================
+// Task 2 — Click Counter
+// ===============================
+
+let count = 0;
+
+const countDisplay = document.querySelector("#count");
+const incrementButton = document.querySelector("#increment");
+const decrementButton = document.querySelector("#decrement");
+const resetButton = document.querySelector("#reset");
+
+function updateCounterDisplay() {
+    countDisplay.textContent = count;
+
+    countDisplay.classList.remove("zero", "high");
+
+    if (count === 0) {
+        countDisplay.classList.add("zero");
+    }
+
+    if (count > 5) {
+        countDisplay.classList.add("high");
+    }
+}
+
+incrementButton.addEventListener("click", function () {
+    count++;
+    updateCounterDisplay();
+});
+
+decrementButton.addEventListener("click", function () {
+    if (count > 0) {
+        count--;
+    }
+
+    updateCounterDisplay();
+});
+
+resetButton.addEventListener("click", function () {
+    count = 0;
+    updateCounterDisplay();
+});
+
+updateCounterDisplay();
+
+
+// ===============================
+// Task 3 — Dynamic List Builder
+// ===============================
+
+const itemInput = document.querySelector("#item-input");
+const addItemButton = document.querySelector("#add-item");
+const itemList = document.querySelector("#item-list");
+
+addItemButton.addEventListener("click", function () {
+    const itemText = itemInput.value.trim();
+
+    if (itemText === "") {
+        alert("Please enter an item.");
+        itemInput.focus();
+        return;
+    }
+
+    const li = document.createElement("li");
+    li.textContent = itemText + " ";
+
+    const deleteButton = document.createElement("button");
+    deleteButton.textContent = "×";
+    deleteButton.setAttribute("aria-label", "Delete item");
+
+    deleteButton.addEventListener("click", function () {
+        li.remove();
+    });
+
+    li.appendChild(deleteButton);
+    itemList.appendChild(li);
+
+    itemInput.value = "";
+    itemInput.focus();
+});
+
+
+// ===============================
+// Task 4 — Show/Hide Toggle
+// ===============================
+
+const toggleButton = document.querySelector("#toggle-details");
+const details = document.querySelector(".details");
+
+toggleButton.addEventListener("click", function () {
+    details.classList.toggle("hidden");
+
+    if (details.classList.contains("hidden")) {
+        toggleButton.textContent = "Show Details";
+    } else {
+        toggleButton.textContent = "Hide Details";
+    }
+});
+
+
+// ===============================
+// Task 5 — Color Mixer
+// ===============================
+
+const redSlider = document.querySelector("#red");
+const greenSlider = document.querySelector("#green");
+const blueSlider = document.querySelector("#blue");
+
+const colorPreview = document.querySelector("#color-preview");
+const hexDisplay = document.querySelector("#hex-display");
+
+function convertToHex(value) {
+    return Number(value).toString(16).padStart(2, "0");
+}
+
+function updateColor() {
+    const red = redSlider.value;
+    const green = greenSlider.value;
+    const blue = blueSlider.value;
+
+    const rgbColor = `rgb(${red}, ${green}, ${blue})`;
+    const hexColor = `#${convertToHex(red)}${convertToHex(green)}${convertToHex(blue)}`;
+
+    colorPreview.style.backgroundColor = rgbColor;
+    hexDisplay.textContent = hexColor;
+}
+
+redSlider.addEventListener("input", updateColor);
+greenSlider.addEventListener("input", updateColor);
+blueSlider.addEventListener("input", updateColor);
+
+updateColor();
